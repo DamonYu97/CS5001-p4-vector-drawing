@@ -9,6 +9,7 @@ import model.ShapeType;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 /**
  * @author 200011181
@@ -42,6 +43,30 @@ public class VectorDrawingDelegate extends JFrame {
         file.add(load);
         menuBar.add(file);
         setJMenuBar(menuBar);
+        save.addActionListener(e -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            int option = jFileChooser.showSaveDialog(this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                try {
+                    model.save(jFileChooser.getSelectedFile());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        load.addActionListener(e -> {
+            JFileChooser jFileChooser = new JFileChooser();
+            int option = jFileChooser.showOpenDialog(this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                try {
+                    model.load(jFileChooser.getSelectedFile());
+                    repaint();
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
 
         setLayout(new BorderLayout());
         toolBar = new JToolBar();

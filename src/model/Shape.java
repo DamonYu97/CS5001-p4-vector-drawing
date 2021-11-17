@@ -4,26 +4,18 @@
 package model;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author 200011181
  * @version 1.0
  */
-public abstract class Shape {
+public abstract class Shape implements Serializable {
     protected Color color;
     protected int startPointX;
     protected int startPointY;
     protected int endPointX;
     protected int endPointY;
-
-    public Shape() {
-        //default
-        this(Color.black, 0 ,0, 0, 0);
-    }
-
-    public Shape(Color color) {
-        this(color, 0 ,0, 0, 0);
-    }
 
     public Shape(Color color, int startPointX, int startPointY, int endPointX, int endPointY) {
         this.color = color;

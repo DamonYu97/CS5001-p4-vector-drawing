@@ -4,7 +4,9 @@
 package model;
 
 import java.awt.*;
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +29,29 @@ public class CanvasModel extends AbstractModel {
         this(new ArrayList<>(), Color.black);
     }
 
-    public void save(File toFile) {
-
+    public void save(File toFile) throws IOException {
+        //get the file
+        String fileName = toFile.getName();
+        if (!fileName.endsWith(".vec")) {
+            toFile = new File(toFile.getParentFile(), fileName + ".vec");
+        }
+        //write shapes to file
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(toFile));
+        out.writeObject(shapes);
+        out.close();
     }
 
-    public void load(File fromFile) {
+    public void load(File fromFile) throws IOException, ClassNotFoundException {
+        //get the file
+        Path filePath = fromFile.toPath();
+        if (!filePath.toString().endsWith(".vec") || Files.notExists(filePath)) {
+            return;
+        }
+        //reset shapes from file
+        ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(fromFile));
+        this.shapes = (List<Shape>)inputStream.readObject();
+        inputStream.close();
+
 
     }
 
@@ -76,7 +96,14 @@ public class CanvasModel extends AbstractModel {
         this.shape = null;
     }
 
-
+    public void lockRatio() {
+        if (shapeType == null && shape == null) {
+            return;
+        }
+        if (shape instanceof  Lockable) {
+            ((Lockable)shape).enableLock(true);
+        }
+    }
 
     public void setColor(Color color) {
         Color oldColor = this.color;
