@@ -9,6 +9,9 @@ import model.ShapeType;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 
 /**
@@ -35,6 +38,18 @@ public class VectorDrawingDelegate extends JFrame {
     public VectorDrawingDelegate(CanvasModel model) {
         super("Vector Drawing Program");
         canvasModel = model;
+        setLayout(new BorderLayout());
+        setupMenuBar();
+        setupToolBar();
+        canvasPanel = new CanvasPanel(canvasModel);
+        getContentPane().add(canvasPanel, BorderLayout.CENTER);
+        setSize(500, 500);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
+
+    }
+
+    private void setupMenuBar() {
         menuBar = new JMenuBar();
         file = new JMenu("File");
         save = new JMenuItem("Save");
@@ -48,7 +63,7 @@ public class VectorDrawingDelegate extends JFrame {
             int option = jFileChooser.showSaveDialog(this);
             if (option == JFileChooser.APPROVE_OPTION) {
                 try {
-                    model.save(jFileChooser.getSelectedFile());
+                    canvasModel.save(jFileChooser.getSelectedFile());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -60,15 +75,16 @@ public class VectorDrawingDelegate extends JFrame {
             int option = jFileChooser.showOpenDialog(this);
             if (option == JFileChooser.APPROVE_OPTION) {
                 try {
-                    model.load(jFileChooser.getSelectedFile());
+                    canvasModel.load(jFileChooser.getSelectedFile());
                     repaint();
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
             }
         });
+    }
 
-        setLayout(new BorderLayout());
+    private void setupToolBar() {
         toolBar = new JToolBar();
         toolBar.setAlignmentX(0);
         toolBar.setLayout(new GridLayout(1,2));
@@ -77,20 +93,13 @@ public class VectorDrawingDelegate extends JFrame {
         ellipseButton = new JButton("Ellipse");
         diagonalCrossButton = new JButton("Cross");
         colourButton = new JButton();
-        colourButton.setForeground(Color.black);
-        colourButton.setBorderPainted(false);
+        colourButton.setBackground(Color.black);
         toolBar.add(lineButton);
         toolBar.add(rectangleButton);
         toolBar.add(ellipseButton);
         toolBar.add(diagonalCrossButton);
         toolBar.add(colourButton);
         getContentPane().add(toolBar, BorderLayout.NORTH);
-
-        canvasPanel = new CanvasPanel(canvasModel);
-        getContentPane().add(canvasPanel, BorderLayout.CENTER);
-        setSize(500, 500);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setVisible(true);
 
         lineButton.addActionListener(new AbstractAction() {
             @Override
@@ -123,9 +132,8 @@ public class VectorDrawingDelegate extends JFrame {
         colourButton.addActionListener(e -> {
             Color colour = JColorChooser.showDialog(this, "Colour Selection", canvasModel.getColor());
             canvasModel.setColor(colour);
-            colourButton.setForeground(colour);
+            colourButton.setBackground(colour);
         });
-
     }
 
 }

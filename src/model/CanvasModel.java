@@ -84,6 +84,7 @@ public class CanvasModel extends AbstractModel {
     public void drawAllShapes(Graphics g) {
         for (Shape shape: shapes) {
             shape.draw(g);
+            System.out.println(shape.getColor());
         }
     }
 
@@ -96,12 +97,12 @@ public class CanvasModel extends AbstractModel {
         this.shape = null;
     }
 
-    public void lockRatio() {
+    public void lockRatio(boolean lock) {
         if (shapeType == null && shape == null) {
             return;
         }
         if (shape instanceof  Lockable) {
-            ((Lockable)shape).enableLock(true);
+            ((Lockable)shape).enableLock(lock);
         }
     }
 

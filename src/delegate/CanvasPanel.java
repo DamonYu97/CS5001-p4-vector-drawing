@@ -7,6 +7,8 @@ import model.CanvasModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -23,15 +25,30 @@ public class CanvasPanel extends JPanel {
         MyMouseAdapter listener = new MyMouseAdapter();
         addMouseListener(listener);
         addMouseMotionListener(listener);
+        addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                System.out.println(e);
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    model.lockRatio(true);
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    model.lockRatio(false);
+                }
+            }
+        });
     }
 
     class MyMouseAdapter extends MouseAdapter {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            super.mouseClicked(e);
-            System.out.println("Pressed");
-            model.createShape(e.getX(), e.getY());
-        }
 
         @Override
         public void mouseReleased(MouseEvent e) {

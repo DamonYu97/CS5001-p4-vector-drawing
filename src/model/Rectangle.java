@@ -22,6 +22,13 @@ public class Rectangle extends Shape implements Lockable {
     }
 
     @Override
+    public void setEndPoint(int endPointX, int endPointY) {
+        super.setEndPoint(endPointX, endPointY);
+        height = Math.abs(endPointY - startPointY);
+        width = Math.abs(endPointX - startPointX);
+    }
+
+    @Override
     public void draw(Graphics g) {
         if (lockSquare) {
             if (height > width) {
