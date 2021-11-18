@@ -46,7 +46,6 @@ public class VectorDrawingDelegate extends JFrame {
         setSize(500, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-
     }
 
     private void setupMenuBar() {
@@ -94,11 +93,15 @@ public class VectorDrawingDelegate extends JFrame {
         diagonalCrossButton = new JButton("Cross");
         colourButton = new JButton();
         colourButton.setBackground(Color.black);
+        JButton redo = new JButton("Redo");
+        JButton undo = new JButton("Undo");
         toolBar.add(lineButton);
         toolBar.add(rectangleButton);
         toolBar.add(ellipseButton);
         toolBar.add(diagonalCrossButton);
         toolBar.add(colourButton);
+        toolBar.add(undo);
+        toolBar.add(redo);
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         lineButton.addActionListener(new AbstractAction() {
@@ -133,6 +136,16 @@ public class VectorDrawingDelegate extends JFrame {
             Color colour = JColorChooser.showDialog(this, "Colour Selection", canvasModel.getColor());
             canvasModel.setColor(colour);
             colourButton.setBackground(colour);
+        });
+
+        undo.addActionListener(e -> {
+            canvasModel.undo();
+            canvasPanel.repaint();
+        });
+
+        redo.addActionListener(e -> {
+            canvasModel.redo();
+            canvasPanel.repaint();
         });
     }
 

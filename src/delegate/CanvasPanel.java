@@ -22,6 +22,7 @@ public class CanvasPanel extends JPanel {
     public CanvasPanel(CanvasModel model) {
         this.model = model;
         setBackground(Color.white);
+        setFocusable(true);
         MyMouseAdapter listener = new MyMouseAdapter();
         addMouseListener(listener);
         addMouseMotionListener(listener);

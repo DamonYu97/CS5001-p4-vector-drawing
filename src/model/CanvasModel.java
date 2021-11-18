@@ -8,7 +8,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * @author 200011181
@@ -16,6 +18,8 @@ import java.util.List;
  */
 public class CanvasModel extends AbstractModel {
     private List<Shape> shapes;
+    private Stack<List<Shape>> undoList;
+    private Stack<List<Shape>> redoList;
     private Color color;
     private ShapeType shapeType;
     private Shape shape;
@@ -23,13 +27,32 @@ public class CanvasModel extends AbstractModel {
     public CanvasModel(List<Shape> shapes, Color color) {
         this.shapes = shapes;
         this.color = color;
+        undoList = new Stack<>();
+        redoList = new Stack<>();
     }
 
     public CanvasModel() {
         this(new ArrayList<>(), Color.black);
     }
 
+    public void undo() {
+        if (!undoList.isEmpty()) {
+            List<Shape> temp = shapes;
+            redoList.push(temp);
+            shapes = undoList.pop();
+        }
+    }
+
+    public void redo() {
+        if (!redoList.isEmpty()) {
+            List<Shape> temp = shapes;
+            undoList.push(temp);
+            shapes = redoList.pop();
+        }
+    }
+
     public void save(File toFile) throws IOException {
+        addUndo();
         //get the file
         String fileName = toFile.getName();
         if (!fileName.endsWith(".vec")) {
@@ -42,6 +65,7 @@ public class CanvasModel extends AbstractModel {
     }
 
     public void load(File fromFile) throws IOException, ClassNotFoundException {
+        addUndo();
         //get the file
         Path filePath = fromFile.toPath();
         if (!filePath.toString().endsWith(".vec") || Files.notExists(filePath)) {
@@ -51,8 +75,6 @@ public class CanvasModel extends AbstractModel {
         ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(fromFile));
         this.shapes = (List<Shape>)inputStream.readObject();
         inputStream.close();
-
-
     }
 
     public void createShape(int startPointX, int startPointY) {
@@ -88,11 +110,18 @@ public class CanvasModel extends AbstractModel {
         }
     }
 
+    public void addUndo() {
+        redoList.clear();
+        List<Shape> temp = new ArrayList<>(shapes);
+        undoList.push(temp);
+    }
+
     public void finishedDrawing() {
         if (this.shape == null) {
             return;
         }
         Shape finishedShape = this.shape;
+        addUndo();
         shapes.add(finishedShape);
         this.shape = null;
     }
