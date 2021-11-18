@@ -4,18 +4,33 @@
 package model;
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 
 /**
  * @author 200011181
  * @version 1.0
  */
-public class Ellipse extends Shape {
-    public Ellipse(Color color, int startPointX, int startPointY, int endPointX, int endPointY) {
-        super(color, startPointX, startPointY, endPointX, endPointY);
+public class Ellipse extends Shape implements Lockable {
+    private int height;
+    private int width;
+    private boolean lockSquare;
+
+    public Ellipse(Color color, Boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
+        super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
+        lockSquare = false;
     }
 
     @Override
-    public void draw(Graphics g) {
+    protected void update() {
+        height = Math.abs(endPointY - startPointY);
+        width = Math.abs(endPointX - startPointX);
+        if (lockSquare) {
+            if (height > width) {
+                height = width;
+            } else {
+                width = height;
+            }
+        }
         int x = startPointX;
         int y = startPointY;
         if (endPointY - startPointY < 0) {
@@ -24,7 +39,12 @@ public class Ellipse extends Shape {
         if (endPointX - startPointX < 0 ) {
             x = endPointX;
         }
-        g.drawOval(x, y, Math.abs(endPointX - startPointX), Math.abs(endPointY - startPointY));
-        g.setColor(color);
+        shape = new Ellipse2D.Double(x, y, width, height);
+    }
+
+
+    @Override
+    public void enableLock(boolean lock) {
+        lockSquare = lock;
     }
 }

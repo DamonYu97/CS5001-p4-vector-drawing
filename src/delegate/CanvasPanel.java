@@ -52,6 +52,14 @@ public class CanvasPanel extends JPanel {
     class MyMouseAdapter extends MouseAdapter {
 
         @Override
+        public void mouseClicked(MouseEvent e) {
+            super.mouseClicked(e);
+            if (model.getMode() == CanvasModel.SELECT_MODE) {
+                model.selectShape(e.getX(), e.getY());
+            }
+        }
+
+        @Override
         public void mouseReleased(MouseEvent e) {
             super.mouseReleased(e);
             System.out.println("Released");
@@ -59,17 +67,21 @@ public class CanvasPanel extends JPanel {
             repaint();
         }
 
-
         @Override
         public void mouseDragged(MouseEvent e) {
             super.mouseDragged(e);
-            if (model.getShape() == null) {
-                model.createShape(e.getX(), e.getY());
-            } else {
-                model.setEndPoint(e.getX(), e.getY());
-                System.out.println("Dragged " + model.getShape());
-                repaint();
+            if (model.getMode() == CanvasModel.DRAW_MODE) {
+                if (model.getShape() == null) {
+                    model.createShape(e.getX(), e.getY());
+                } else {
+                    model.setEndPoint(e.getX(), e.getY());
+                    System.out.println("Dragged " + model.getShape());
+                    repaint();
+                }
+            } else if (model.getMode() == CanvasModel.SELECT_MODE) {
+                System.out.println("Move shape");
             }
+
         }
     };
 

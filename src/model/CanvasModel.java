@@ -17,22 +17,30 @@ import java.util.Stack;
  * @version 1.0
  */
 public class CanvasModel extends AbstractModel {
+    public static final int SELECT_MODE = 0;
+    public static final int DRAW_MODE = 1;
     private List<Shape> shapes;
     private Stack<List<Shape>> undoList;
     private Stack<List<Shape>> redoList;
     private Color color;
+    private Boolean isFilled;
     private ShapeType shapeType;
     private Shape shape;
+    private Shape selectedShape;
+    private int mode;
 
-    public CanvasModel(List<Shape> shapes, Color color) {
+    public CanvasModel(List<Shape> shapes, Color color, Boolean isFilled, int mode) {
         this.shapes = shapes;
+        this.selectedShape = null;
         this.color = color;
+        this.isFilled = isFilled;
+        this.mode = mode;
         undoList = new Stack<>();
         redoList = new Stack<>();
     }
 
     public CanvasModel() {
-        this(new ArrayList<>(), Color.black);
+        this(new ArrayList<>(), Color.black, false, SELECT_MODE);
     }
 
     public void undo() {
@@ -41,6 +49,21 @@ public class CanvasModel extends AbstractModel {
             redoList.push(temp);
             shapes = undoList.pop();
         }
+    }
+
+    public void selectShape(int x, int y) {
+        selectedShape = null;
+        for (int i = shapes.size() - 1; i >= 0 ; i--) {
+            Shape shape = shapes.get(i);
+            if (shape.contain(x, y)) {
+                selectedShape = shape;
+                return;
+            }
+        }
+    }
+
+    public void dragTo(int x, int y) {
+        
     }
 
     public void redo() {
@@ -82,13 +105,13 @@ public class CanvasModel extends AbstractModel {
             return;
         }
         if (shapeType == ShapeType.LINE) {
-            shape = new Line(color, startPointX, startPointY, startPointX, startPointY);
+            shape = new Line(color, isFilled, startPointX, startPointY, startPointX, startPointY);
         } else if (shapeType == ShapeType.RECTANGLE) {
-            shape = new Rectangle(color, startPointX, startPointY, startPointX, startPointY);
+            shape = new Rectangle(color, isFilled, startPointX, startPointY, startPointX, startPointY);
         } else if (shapeType == ShapeType.ELLIPSE) {
-            shape = new Ellipse(color, startPointX, startPointY, startPointX, startPointY);
+            shape = new Ellipse(color, isFilled, startPointX, startPointY, startPointX, startPointY);
         } else if (shapeType == ShapeType.DIAGONAL_CROSS) {
-            shape = new DiagonalCross(color, startPointX, startPointY, startPointX, startPointY);
+            shape = new DiagonalCross(color, isFilled, startPointX, startPointY, startPointX, startPointY);
         }
     }
 
@@ -100,12 +123,12 @@ public class CanvasModel extends AbstractModel {
     }
 
     public void drawCurrentShape(Graphics g) {
-        this.shape.draw(g);
+        this.shape.draw((Graphics2D)g);
     }
 
     public void drawAllShapes(Graphics g) {
         for (Shape shape: shapes) {
-            shape.draw(g);
+            shape.draw((Graphics2D) g);
             System.out.println(shape.getColor());
         }
     }
@@ -144,7 +167,12 @@ public class CanvasModel extends AbstractModel {
     public void setShapeType(ShapeType shapeType) {
         ShapeType oldType = this.shapeType;
         this.shapeType = shapeType;
+        setMode(DRAW_MODE);
         firePropertyChange("ShapeType", oldType, this.shapeType);
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
     }
 
     public Shape getShape() {
@@ -157,5 +185,17 @@ public class CanvasModel extends AbstractModel {
 
     public Color getColor() {
         return color;
+    }
+
+    public Shape getSelectedShape() {
+        return selectedShape;
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public void changeFilledState() {
+        isFilled = !isFilled;
     }
 }

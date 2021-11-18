@@ -4,6 +4,7 @@
 package model;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 /**
  * @author 200011181
@@ -11,13 +12,12 @@ import java.awt.*;
  */
 public class Line extends Shape {
 
-    public Line(Color color, int startPointX, int startPointY, int endPointX, int endPointY) {
-        super(color, startPointX, startPointY, endPointX, endPointY);
+    public Line(Color color, Boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
+        super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
     }
 
     @Override
-    public void draw(Graphics g) {
-        g.drawLine(startPointX, startPointY, endPointX, endPointY);
-        g.setColor(color);
+    protected void update() {
+        shape = new Line2D.Double(startPointX, startPointY, endPointX, endPointY);
     }
 }

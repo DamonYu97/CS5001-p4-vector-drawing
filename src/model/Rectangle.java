@@ -4,6 +4,7 @@
 package model;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 /**
  * @author 200011181
@@ -14,22 +15,15 @@ public class Rectangle extends Shape implements Lockable {
     private int width;
     private boolean lockSquare;
 
-    public Rectangle(Color color, int startPointX, int startPointY, int endPointX, int endPointY) {
-        super(color, startPointX, startPointY, endPointX, endPointY);
+    public Rectangle(Color color, Boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
+        super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
         lockSquare = false;
-        height = Math.abs(endPointY - startPointY);
-        width = Math.abs(endPointX - startPointX);
     }
 
     @Override
-    public void setEndPoint(int endPointX, int endPointY) {
-        super.setEndPoint(endPointX, endPointY);
+    protected void update() {
         height = Math.abs(endPointY - startPointY);
         width = Math.abs(endPointX - startPointX);
-    }
-
-    @Override
-    public void draw(Graphics g) {
         if (lockSquare) {
             if (height > width) {
                 height = width;
@@ -45,9 +39,9 @@ public class Rectangle extends Shape implements Lockable {
         if (endPointX - startPointX < 0 ) {
             x = endPointX;
         }
-        g.drawRect(x, y, width, height);
-        g.setColor(color);
+        shape = new Rectangle2D.Double(x, y, width, height);
     }
+
 
     @Override
     public void enableLock(boolean lock) {

@@ -4,18 +4,18 @@
 package model;
 
 import java.awt.*;
+import java.awt.geom.Path2D;
 
 /**
  * @author 200011181
  * @version 1.0
  */
 public class DiagonalCross extends Shape {
-    public DiagonalCross(Color color, int startPointX, int startPointY, int endPointX, int endPointY) {
-        super(color, startPointX, startPointY, endPointX, endPointY);
+    public DiagonalCross(Color color, Boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
+        super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
     }
-
     @Override
-    public void draw(Graphics g) {
+    protected void update() {
         int xMove = (endPointX - startPointX) / 4;
         int yMove = (endPointY - startPointY) / 4;
 
@@ -26,19 +26,20 @@ public class DiagonalCross extends Shape {
 
         int interX1 = startPointX + xMove * 3 / 2;
         int interY1 = startPointY + yMove * 3 / 2;
-        g.drawLine(startPointX, startPointY, interX1, interY1);
-        g.drawLine(interX1 + xMove, interY1 + yMove, endPointX, endPointY);
-        g.drawLine(x1, y1, interX1 + xMove, interY1 - yMove);
-        g.drawLine(interX1 + xMove * 2, interY1, x2, y2);
-        g.drawLine(startPointX, startPointY, x1, y1);
-        g.drawLine(endPointX, endPointY, x2, y2);
-
-        g.drawLine(startPointX, y2, interX1, interY1);
-        g.drawLine(interX1 + xMove, interY1 - yMove, endPointX, y1);
-        g.drawLine(x1, endPointY, interX1 + xMove, interY1 + yMove);
-        g.drawLine(interX1 + xMove * 2, interY1, x2, startPointY);
-        g.drawLine(startPointX, y2, x1, endPointY);
-        g.drawLine(endPointX, y1, x2, startPointY);
-        g.setColor(color);
+        Path2D path = new Path2D.Double();
+        path.moveTo(startPointX, startPointY);
+        path.lineTo(x1, y1);
+        path.lineTo(interX1 + xMove, interY1 - yMove);
+        path.lineTo(endPointX, y1);
+        path.lineTo(x2, startPointY);
+        path.lineTo(interX1 + xMove * 2, interY1);
+        path.lineTo(x2, y2);
+        path.lineTo(endPointX, endPointY);
+        path.lineTo(interX1 + xMove, interY1 + yMove);
+        path.lineTo(x1, endPointY);
+        path.lineTo(startPointX, y2);
+        path.lineTo(interX1, interY1);
+        path.closePath();
+        shape = path;
     }
 }

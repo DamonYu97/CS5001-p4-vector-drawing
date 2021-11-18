@@ -91,17 +91,21 @@ public class VectorDrawingDelegate extends JFrame {
         rectangleButton = new JButton("Rectangle");
         ellipseButton = new JButton("Ellipse");
         diagonalCrossButton = new JButton("Cross");
+        JButton fillButton = new JButton("Fill");
         colourButton = new JButton();
         colourButton.setBackground(Color.black);
         JButton redo = new JButton("Redo");
         JButton undo = new JButton("Undo");
+        JButton select = new JButton("Select");
         toolBar.add(lineButton);
         toolBar.add(rectangleButton);
         toolBar.add(ellipseButton);
         toolBar.add(diagonalCrossButton);
         toolBar.add(colourButton);
+        toolBar.add(fillButton);
         toolBar.add(undo);
         toolBar.add(redo);
+        toolBar.add(select);
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         lineButton.addActionListener(new AbstractAction() {
@@ -138,6 +142,10 @@ public class VectorDrawingDelegate extends JFrame {
             colourButton.setBackground(colour);
         });
 
+        fillButton.addActionListener(e -> {
+            canvasModel.changeFilledState();
+        });
+
         undo.addActionListener(e -> {
             canvasModel.undo();
             canvasPanel.repaint();
@@ -146,6 +154,10 @@ public class VectorDrawingDelegate extends JFrame {
         redo.addActionListener(e -> {
             canvasModel.redo();
             canvasPanel.repaint();
+        });
+
+        select.addActionListener(e -> {
+            canvasModel.setMode(CanvasModel.SELECT_MODE);
         });
     }
 
