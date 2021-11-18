@@ -63,7 +63,7 @@ public class CanvasModel extends AbstractModel {
     }
 
     public void dragTo(int x, int y) {
-        
+        selectedShape.move(x, y);
     }
 
     public void redo() {

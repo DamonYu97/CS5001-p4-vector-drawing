@@ -31,6 +31,14 @@ public abstract class Shape implements Serializable {
         update();
     }
 
+    public void move(int x, int y) {
+        this.startPointX = startPointX;
+        this.startPointY = startPointY;
+        this.endPointX = endPointX;
+        this.endPointY = endPointY;
+        update();
+    }
+
     public boolean contain(int x, int y) {
         return shape.contains(x, y);
     }
