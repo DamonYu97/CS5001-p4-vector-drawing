@@ -19,7 +19,7 @@ import java.util.Stack;
  * @author 200011181
  * @version 1.0
  */
-public class CanvasModel extends AbstractModel {
+public class CanvasModel extends GeneralModel {
     public static final int SELECT_MODE = 0;
     public static final int DRAW_MODE = 1;
     private List<Shape> shapes;
@@ -34,6 +34,7 @@ public class CanvasModel extends AbstractModel {
     private ListUtil<Shape> listUtil;
 
     public CanvasModel(List<Shape> shapes, Color color, boolean isFilled, int mode) {
+        super();
         this.shapes = shapes;
         this.selectedShape = null;
         this.color = color;
@@ -174,7 +175,6 @@ public class CanvasModel extends AbstractModel {
     public void setColor(Color color) {
         Color oldColor = this.color;
         this.color = color;
-        firePropertyChange("Color", oldColor, this.color);
     }
 
     public void updateSelectedShapeColor() {
@@ -188,7 +188,6 @@ public class CanvasModel extends AbstractModel {
         ShapeType oldType = this.shapeType;
         this.shapeType = shapeType;
         setMode(DRAW_MODE);
-        firePropertyChange("ShapeType", oldType, this.shapeType);
     }
 
     public void setMode(int mode) {

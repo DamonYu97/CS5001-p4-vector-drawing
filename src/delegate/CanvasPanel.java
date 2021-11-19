@@ -36,7 +36,7 @@ public class CanvasPanel extends JPanel {
         addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-
+                System.out.println("key typed");
             }
 
             @Override
