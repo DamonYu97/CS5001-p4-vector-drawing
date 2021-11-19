@@ -1,21 +1,21 @@
 /*
  * Copyright 2021 Damon Yu
  */
-package model;
+package model.shape;
 
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * @author 200011181
  * @version 1.0
  */
-public class Ellipse extends Shape implements Lockable {
+public class Rectangle extends Shape implements Lockable {
     private int height;
     private int width;
     private boolean lockSquare;
 
-    public Ellipse(Color color, Boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
+    public Rectangle(Color color, boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
         super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
         lockSquare = false;
     }
@@ -39,7 +39,7 @@ public class Ellipse extends Shape implements Lockable {
         if (endPointX - startPointX < 0 ) {
             x = endPointX;
         }
-        shape = new Ellipse2D.Double(x, y, width, height);
+        shape = new Rectangle2D.Double(x, y, width, height);
     }
 
 
@@ -47,4 +47,5 @@ public class Ellipse extends Shape implements Lockable {
     public void enableLock(boolean lock) {
         lockSquare = lock;
     }
+
 }

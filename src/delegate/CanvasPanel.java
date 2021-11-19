@@ -18,14 +18,21 @@ import java.awt.event.MouseEvent;
  */
 public class CanvasPanel extends JPanel {
     private CanvasModel model;
+    private Point dragStartPoint;
+    private Point initStart;
+    private Point initEnd;
 
     public CanvasPanel(CanvasModel model) {
         this.model = model;
+        dragStartPoint = null;
+        initStart = null;
+        initEnd = null;
         setBackground(Color.white);
         setFocusable(true);
         MyMouseAdapter listener = new MyMouseAdapter();
         addMouseListener(listener);
         addMouseMotionListener(listener);
+        //another way
         addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -54,6 +61,7 @@ public class CanvasPanel extends JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
+            System.out.println("Click");
             if (model.getMode() == CanvasModel.SELECT_MODE) {
                 model.selectShape(e.getX(), e.getY());
             }
@@ -63,6 +71,9 @@ public class CanvasPanel extends JPanel {
         public void mouseReleased(MouseEvent e) {
             super.mouseReleased(e);
             System.out.println("Released");
+            dragStartPoint = null;
+            initStart = null;
+            initEnd = null;
             model.finishedDrawing();
             repaint();
         }
@@ -79,8 +90,24 @@ public class CanvasPanel extends JPanel {
                     repaint();
                 }
             } else if (model.getMode() == CanvasModel.SELECT_MODE) {
-                System.out.println("Move shape");
+                if (dragStartPoint == null) {
+                    model.selectShape(e.getX(), e.getY());
+                    if (model.getSelectedShape()!= null) {
+                        dragStartPoint = new Point(e.getX(), e.getY());
+                        initStart = model.getSelectedShape().getStartPoint();
+                        initEnd = model.getSelectedShape().getEndPoint();
+                        model.startDrag();
+                    }
+                } else {
+                    if (model.getSelectedShape() != null) {
+                        int offsetX = e.getX() - dragStartPoint.x;
+                        int offsetY = e.getY() - dragStartPoint.y;
+                        model.drag(offsetX, offsetY, initStart, initEnd);
+                        repaint();
+                    }
+                }
             }
+
 
         }
     };
@@ -88,7 +115,6 @@ public class CanvasPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.println("drawing");
         if (model.getShape() != null) {
             model.drawCurrentShape(g);
         }
@@ -96,5 +122,4 @@ public class CanvasPanel extends JPanel {
             model.drawAllShapes(g);
         }
     }
-
 }

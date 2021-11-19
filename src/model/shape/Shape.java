@@ -1,11 +1,9 @@
 /*
  * Copyright 2021 Damon Yu
  */
-package model;
+package model.shape;
 
 import java.awt.*;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
 import java.io.Serializable;
 
 /**
@@ -14,14 +12,14 @@ import java.io.Serializable;
  */
 public abstract class Shape implements Serializable {
     protected Color color;
-    protected Boolean isFilled;
+    protected boolean isFilled;
     protected int startPointX;
     protected int startPointY;
     protected int endPointX;
     protected int endPointY;
     protected java.awt.Shape shape;
 
-    public Shape(Color color, Boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
+    public Shape(Color color, boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
         this.color = color;
         this.isFilled = isFilled;
         this.startPointX = startPointX;
@@ -31,11 +29,11 @@ public abstract class Shape implements Serializable {
         update();
     }
 
-    public void move(int x, int y) {
-        this.startPointX = startPointX;
-        this.startPointY = startPointY;
-        this.endPointX = endPointX;
-        this.endPointY = endPointY;
+    public void move(int offsetX, int offsetY, Point initStart, Point initEnd) {
+        this.startPointX = initStart.x + offsetX;
+        this.startPointY = initStart.y + offsetY;
+        this.endPointX = initEnd.x + offsetX ;
+        this.endPointY = initEnd.y + offsetY;
         update();
     }
 
@@ -59,11 +57,11 @@ public abstract class Shape implements Serializable {
         this.color = color;
     }
 
-    public Boolean getFilled() {
+    public boolean getFilled() {
         return isFilled;
     }
 
-    public void setFilled(Boolean filled) {
+    public void setFilled(boolean filled) {
         isFilled = filled;
     }
 
@@ -74,6 +72,14 @@ public abstract class Shape implements Serializable {
     }
 
     protected abstract void update();
+
+    public Point getStartPoint() {
+        return new Point(startPointX, startPointY);
+    }
+
+    public Point getEndPoint() {
+        return  new Point(endPointX, endPointY);
+    }
 
     @Override
     public String toString() {

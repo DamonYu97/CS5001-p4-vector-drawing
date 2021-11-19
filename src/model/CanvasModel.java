@@ -3,12 +3,15 @@
  */
 package model;
 
+import Util.ListUtil;
+import model.shape.*;
+import model.shape.Shape;
+
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -20,16 +23,17 @@ public class CanvasModel extends AbstractModel {
     public static final int SELECT_MODE = 0;
     public static final int DRAW_MODE = 1;
     private List<Shape> shapes;
-    private Stack<List<Shape>> undoList;
-    private Stack<List<Shape>> redoList;
+    private Stack<byte[]> undoList;
+    private Stack<byte[]> redoList;
     private Color color;
-    private Boolean isFilled;
+    private boolean isFilled;
     private ShapeType shapeType;
     private Shape shape;
     private Shape selectedShape;
     private int mode;
+    private ListUtil<Shape> listUtil;
 
-    public CanvasModel(List<Shape> shapes, Color color, Boolean isFilled, int mode) {
+    public CanvasModel(List<Shape> shapes, Color color, boolean isFilled, int mode) {
         this.shapes = shapes;
         this.selectedShape = null;
         this.color = color;
@@ -37,17 +41,22 @@ public class CanvasModel extends AbstractModel {
         this.mode = mode;
         undoList = new Stack<>();
         redoList = new Stack<>();
+        listUtil = new ListUtil<>();
     }
 
     public CanvasModel() {
         this(new ArrayList<>(), Color.black, false, SELECT_MODE);
     }
 
+
     public void undo() {
         if (!undoList.isEmpty()) {
-            List<Shape> temp = shapes;
-            redoList.push(temp);
-            shapes = undoList.pop();
+            try {
+                redoList.push(listUtil.serialize(shapes));
+                shapes = listUtil.deserialize(undoList.pop());
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -62,15 +71,20 @@ public class CanvasModel extends AbstractModel {
         }
     }
 
-    public void dragTo(int x, int y) {
-        selectedShape.move(x, y);
+    public void drag(int offSetX, int offsetY, Point initStart, Point initEnd) {
+        if (selectedShape != null) {
+            selectedShape.move(offSetX, offsetY, initStart, initEnd);
+        }
     }
 
     public void redo() {
         if (!redoList.isEmpty()) {
-            List<Shape> temp = shapes;
-            undoList.push(temp);
-            shapes = redoList.pop();
+            try {
+                undoList.push(listUtil.serialize(shapes));
+                shapes = listUtil.deserialize(redoList.pop());
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -104,15 +118,8 @@ public class CanvasModel extends AbstractModel {
         if (shapeType == null) {
             return;
         }
-        if (shapeType == ShapeType.LINE) {
-            shape = new Line(color, isFilled, startPointX, startPointY, startPointX, startPointY);
-        } else if (shapeType == ShapeType.RECTANGLE) {
-            shape = new Rectangle(color, isFilled, startPointX, startPointY, startPointX, startPointY);
-        } else if (shapeType == ShapeType.ELLIPSE) {
-            shape = new Ellipse(color, isFilled, startPointX, startPointY, startPointX, startPointY);
-        } else if (shapeType == ShapeType.DIAGONAL_CROSS) {
-            shape = new DiagonalCross(color, isFilled, startPointX, startPointY, startPointX, startPointY);
-        }
+        shape = ShapeFactory.createShape(shapeType, color, isFilled,
+                startPointX, startPointY, startPointX, startPointY);
     }
 
     public void setEndPoint(int endPointX, int endPointY) {
@@ -129,14 +136,20 @@ public class CanvasModel extends AbstractModel {
     public void drawAllShapes(Graphics g) {
         for (Shape shape: shapes) {
             shape.draw((Graphics2D) g);
-            System.out.println(shape.getColor());
         }
     }
 
-    public void addUndo() {
+    private void addUndo() {
         redoList.clear();
-        List<Shape> temp = new ArrayList<>(shapes);
-        undoList.push(temp);
+        try {
+            undoList.push(listUtil.serialize(shapes));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void startDrag() {
+        addUndo();
     }
 
     public void finishedDrawing() {
@@ -153,7 +166,7 @@ public class CanvasModel extends AbstractModel {
         if (shapeType == null && shape == null) {
             return;
         }
-        if (shape instanceof  Lockable) {
+        if (shape instanceof Lockable) {
             ((Lockable)shape).enableLock(lock);
         }
     }
@@ -162,6 +175,13 @@ public class CanvasModel extends AbstractModel {
         Color oldColor = this.color;
         this.color = color;
         firePropertyChange("Color", oldColor, this.color);
+    }
+
+    public void updateSelectedShapeColor() {
+        if (selectedShape != null) {
+            addUndo();
+            selectedShape.setColor(color);
+        }
     }
 
     public void setShapeType(ShapeType shapeType) {
@@ -197,5 +217,12 @@ public class CanvasModel extends AbstractModel {
 
     public void changeFilledState() {
         isFilled = !isFilled;
+    }
+
+    public void changeSelectedFilledState() {
+        if (selectedShape != null) {
+            addUndo();
+            selectedShape.setFilled(!selectedShape.getFilled());
+        }
     }
 }

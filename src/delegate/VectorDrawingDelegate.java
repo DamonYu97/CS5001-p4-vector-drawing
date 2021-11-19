@@ -4,15 +4,14 @@
 package delegate;
 
 import model.CanvasModel;
-import model.ShapeType;
+import model.shape.ShapeType;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author 200011181
@@ -27,10 +26,7 @@ public class VectorDrawingDelegate extends JFrame {
     private JMenuItem save;
     private JMenuItem load;
 
-    private JButton lineButton;
-    private JButton rectangleButton;
-    private JButton ellipseButton;
-    private JButton diagonalCrossButton;
+    private List<JButton> shapeButtons;
     private JButton colourButton;
 
     private CanvasModel canvasModel;
@@ -43,7 +39,7 @@ public class VectorDrawingDelegate extends JFrame {
         setupToolBar();
         canvasPanel = new CanvasPanel(canvasModel);
         getContentPane().add(canvasPanel, BorderLayout.CENTER);
-        setSize(500, 500);
+        setSize(700, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
     }
@@ -87,20 +83,13 @@ public class VectorDrawingDelegate extends JFrame {
         toolBar = new JToolBar();
         toolBar.setAlignmentX(0);
         toolBar.setLayout(new GridLayout(1,2));
-        lineButton = new JButton("Line");
-        rectangleButton = new JButton("Rectangle");
-        ellipseButton = new JButton("Ellipse");
-        diagonalCrossButton = new JButton("Cross");
+        setupShapeButtons();
         JButton fillButton = new JButton("Fill");
         colourButton = new JButton();
         colourButton.setBackground(Color.black);
         JButton redo = new JButton("Redo");
         JButton undo = new JButton("Undo");
         JButton select = new JButton("Select");
-        toolBar.add(lineButton);
-        toolBar.add(rectangleButton);
-        toolBar.add(ellipseButton);
-        toolBar.add(diagonalCrossButton);
         toolBar.add(colourButton);
         toolBar.add(fillButton);
         toolBar.add(undo);
@@ -108,42 +97,22 @@ public class VectorDrawingDelegate extends JFrame {
         toolBar.add(select);
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
-        lineButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                canvasModel.setShapeType(ShapeType.LINE);
-            }
-        });
-
-        rectangleButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                canvasModel.setShapeType(ShapeType.RECTANGLE);
-            }
-        });
-
-        ellipseButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                canvasModel.setShapeType(ShapeType.ELLIPSE);
-            }
-        });
-
-        diagonalCrossButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                canvasModel.setShapeType(ShapeType.DIAGONAL_CROSS);
-            }
-        });
-
         colourButton.addActionListener(e -> {
             Color colour = JColorChooser.showDialog(this, "Colour Selection", canvasModel.getColor());
             canvasModel.setColor(colour);
             colourButton.setBackground(colour);
+            if (canvasModel.getMode() == CanvasModel.SELECT_MODE && canvasModel.getSelectedShape() != null) {
+                canvasModel.updateSelectedShapeColor();
+                canvasPanel.repaint();
+            }
         });
 
         fillButton.addActionListener(e -> {
             canvasModel.changeFilledState();
+            if (canvasModel.getMode() == CanvasModel.SELECT_MODE && canvasModel.getSelectedShape() != null) {
+                canvasModel.changeSelectedFilledState();
+                canvasPanel.repaint();
+            }
         });
 
         undo.addActionListener(e -> {
@@ -159,6 +128,26 @@ public class VectorDrawingDelegate extends JFrame {
         select.addActionListener(e -> {
             canvasModel.setMode(CanvasModel.SELECT_MODE);
         });
+    }
+
+    private void setupShapeButtons() {
+        shapeButtons = new ArrayList<>();
+        AbstractAction shapeButtonActionListener = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //set the shape type of canvas model based on the button name
+                ShapeType type = ShapeType.typeOfName(e.getActionCommand());
+                canvasModel.setShapeType(type);
+            }
+        };
+        //create shape button for each type of shape
+        for (ShapeType type : ShapeType.values()) {
+            //set up the button name based on the shape type
+            JButton shapeButton = new JButton(type.getName());
+            shapeButtons.add(shapeButton);
+            toolBar.add(shapeButton);
+            shapeButton.addActionListener(shapeButtonActionListener);
+        }
     }
 
 }

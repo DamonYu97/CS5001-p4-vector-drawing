@@ -1,7 +1,7 @@
 /*
  * Copyright 2021 Damon Yu
  */
-package model;
+package model.shape;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -12,7 +12,7 @@ import java.awt.geom.Line2D;
  */
 public class Line extends Shape {
 
-    public Line(Color color, Boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
+    public Line(Color color, boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
         super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
     }
 
