@@ -1,14 +1,9 @@
-/*
- * Copyright 2021 Damon Yu
- */
 package delegate;
 
 import model.CanvasModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -28,32 +23,9 @@ public class CanvasPanel extends JPanel {
         initStart = null;
         initEnd = null;
         setBackground(Color.white);
-        setFocusable(true);
         MyMouseAdapter listener = new MyMouseAdapter();
         addMouseListener(listener);
         addMouseMotionListener(listener);
-        //another way
-        addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                System.out.println("key typed");
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                System.out.println(e);
-                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                    model.lockRatio(true);
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                    model.lockRatio(false);
-                }
-            }
-        });
     }
 
     class MyMouseAdapter extends MouseAdapter {
@@ -61,7 +33,7 @@ public class CanvasPanel extends JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
-            System.out.println("Click");
+            //System.out.println("Click");
             if (model.getMode() == CanvasModel.SELECT_MODE) {
                 model.selectShape(e.getX(), e.getY());
             }
@@ -70,29 +42,32 @@ public class CanvasPanel extends JPanel {
         @Override
         public void mouseReleased(MouseEvent e) {
             super.mouseReleased(e);
-            System.out.println("Released");
+            //System.out.println("Released");
             dragStartPoint = null;
             initStart = null;
             initEnd = null;
             model.finishedDrawing();
-            repaint();
         }
 
         @Override
         public void mouseDragged(MouseEvent e) {
             super.mouseDragged(e);
             if (model.getMode() == CanvasModel.DRAW_MODE) {
+                //if it is draw mode
                 if (model.getShape() == null) {
+                    //create a shape when starting drawing.
                     model.createShape(e.getX(), e.getY());
                 } else {
+                    //change the endpoint when drawing.
                     model.setEndPoint(e.getX(), e.getY());
-                    System.out.println("Dragged " + model.getShape());
-                    repaint();
+                    //System.out.println("Dragged " + model.getShape());
                 }
             } else if (model.getMode() == CanvasModel.SELECT_MODE) {
                 if (dragStartPoint == null) {
+                    //if just start drag, then first find the shape where your mouse put on.
                     model.selectShape(e.getX(), e.getY());
                     if (model.getSelectedShape()!= null) {
+                        //initialize data for drag
                         dragStartPoint = new Point(e.getX(), e.getY());
                         initStart = model.getSelectedShape().getStartPoint();
                         initEnd = model.getSelectedShape().getEndPoint();
@@ -100,10 +75,10 @@ public class CanvasPanel extends JPanel {
                     }
                 } else {
                     if (model.getSelectedShape() != null) {
+                        //move the selected shape
                         int offsetX = e.getX() - dragStartPoint.x;
                         int offsetY = e.getY() - dragStartPoint.y;
                         model.drag(offsetX, offsetY, initStart, initEnd);
-                        repaint();
                     }
                 }
             }
@@ -122,4 +97,5 @@ public class CanvasPanel extends JPanel {
             model.drawAllShapes(g);
         }
     }
+
 }

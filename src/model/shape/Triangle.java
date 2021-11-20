@@ -1,6 +1,3 @@
-/*
- * Copyright 2021 Damon Yu
- */
 package model.shape;
 
 import java.awt.*;
@@ -14,6 +11,10 @@ public class Triangle extends Shape {
 
     public Triangle(Color color, boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
         super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
+    }
+
+    public Triangle(int startPointX, int startPointY, int endPointX, int endPointY) {
+        this(Color.black, false, startPointX, startPointY, endPointX, endPointY);
     }
 
     @Override

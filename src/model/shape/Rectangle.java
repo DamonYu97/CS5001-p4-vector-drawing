@@ -13,39 +13,64 @@ import java.awt.geom.Rectangle2D;
 public class Rectangle extends Shape implements Lockable {
     private int height;
     private int width;
-    private boolean lockSquare;
+    private boolean lockRatio;
 
     public Rectangle(Color color, boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
         super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
-        lockSquare = false;
+        lockRatio = false;
+    }
+
+    public Rectangle(int startPointX, int startPointY, int endPointX, int endPointY) {
+        this(Color.black, false, startPointX, startPointY, endPointX, endPointY);
     }
 
     @Override
     protected void update() {
         height = Math.abs(endPointY - startPointY);
         width = Math.abs(endPointX - startPointX);
-        if (lockSquare) {
+
+        int changedX = 0;
+        int changedY = 0;
+        //if the ratio of the rectangle is locked,
+        //then the edge length of the square is the smaller one between original height and width
+        if (lockRatio) {
             if (height > width) {
+                changedY = height - width;
                 height = width;
             } else {
+                changedX = width - height;
                 width = height;
             }
         }
-        int x = startPointX;
-        int y = startPointY;
+
+        int upperLeftX = startPointX;
+        int upperLeftY = startPointY;
         if (endPointY - startPointY < 0) {
-            y = endPointY;
+            upperLeftY = endPointY + changedY;
         }
         if (endPointX - startPointX < 0 ) {
-            x = endPointX;
+            upperLeftX = endPointX + changedX;
         }
-        shape = new Rectangle2D.Double(x, y, width, height);
+
+        shape = new Rectangle2D.Double(upperLeftX, upperLeftY, width, height);
     }
 
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public boolean isLockRatio() {
+        return lockRatio;
+    }
 
     @Override
     public void enableLock(boolean lock) {
-        lockSquare = lock;
+        lockRatio = lock;
+        update();
     }
 
 }

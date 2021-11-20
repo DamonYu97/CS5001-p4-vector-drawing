@@ -11,21 +11,32 @@ import java.awt.geom.Path2D;
  * @version 1.0
  */
 public class Cross extends Shape {
+    /**
+     * ratio of this cross
+     */
+    private final int DEFAULT_RATIO = 4;
+
     public Cross(Color color, boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
         super(color, isFilled, startPointX, startPointY, endPointX, endPointY);
     }
+
+    public Cross(int startPointX, int startPointY, int endPointX, int endPointY) {
+        this(Color.black, false, startPointX, startPointY, endPointX, endPointY);
+    }
+
+
     @Override
     protected void update() {
-        int xMove = (endPointX - startPointX) / 4;
-        int yMove = (endPointY - startPointY) / 4;
+        int xMove = (endPointX - startPointX) / DEFAULT_RATIO;
+        int yMove = (endPointY - startPointY) / DEFAULT_RATIO;
 
         int x1 = startPointX + xMove;
         int y1 = startPointY - yMove;
         int x2 = endPointX + xMove;
         int y2 = endPointY - yMove;
 
-        int interX1 = startPointX + xMove * 3 / 2;
-        int interY1 = startPointY + yMove * 3 / 2;
+        int interX1 = startPointX + xMove * (DEFAULT_RATIO - 1) / 2;
+        int interY1 = startPointY + yMove * (DEFAULT_RATIO - 1) / 2;
         Path2D path = new Path2D.Double();
         path.moveTo(startPointX, startPointY);
         path.lineTo(x1, y1);

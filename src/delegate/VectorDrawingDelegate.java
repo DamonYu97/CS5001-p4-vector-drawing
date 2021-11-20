@@ -1,14 +1,14 @@
-/*
- * Copyright 2021 Damon Yu
- */
 package delegate;
 
 import model.CanvasModel;
+import model.ShapeListener;
 import model.shape.ShapeType;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
  * @author 200011181
  * @version 1.0
  */
-public class VectorDrawingDelegate extends JFrame {
+public class VectorDrawingDelegate extends JFrame implements ShapeListener {
     private JMenuBar menuBar;
     private JToolBar toolBar;
     private CanvasPanel canvasPanel;
@@ -27,20 +27,48 @@ public class VectorDrawingDelegate extends JFrame {
     private JMenuItem load;
 
     private List<JButton> shapeButtons;
-    private JButton colourButton;
 
     private CanvasModel canvasModel;
 
     public VectorDrawingDelegate(CanvasModel model) {
         super("Vector Drawing Program");
         canvasModel = model;
+        model.addListener(this);
         setLayout(new BorderLayout());
         setupMenuBar();
         setupToolBar();
         canvasPanel = new CanvasPanel(canvasModel);
         getContentPane().add(canvasPanel, BorderLayout.CENTER);
-        setSize(700, 700);
+        setSize(1200, 1200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        setFocusable(true);
+        addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                //System.out.println("key typed");
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                System.out.println(e);
+                if (canvasModel.getMode() == CanvasModel.DRAW_MODE) {
+                    if (e.getExtendedKeyCode() == KeyEvent.VK_SHIFT) {
+                        canvasModel.lockRatio(true);
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                System.out.println(e);
+                if (canvasModel.getMode() == CanvasModel.DRAW_MODE) {
+                    if (e.getExtendedKeyCode() == KeyEvent.VK_SHIFT) {
+                        canvasModel.lockRatio(false);
+                    }
+                }
+            }
+        });
         setVisible(true);
     }
 
@@ -71,7 +99,6 @@ public class VectorDrawingDelegate extends JFrame {
             if (option == JFileChooser.APPROVE_OPTION) {
                 try {
                     canvasModel.load(jFileChooser.getSelectedFile());
-                    repaint();
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
@@ -85,16 +112,18 @@ public class VectorDrawingDelegate extends JFrame {
         toolBar.setLayout(new GridLayout(1,2));
         setupShapeButtons();
         JButton fillButton = new JButton("Fill");
-        colourButton = new JButton();
+        JButton colourButton = new JButton();
         colourButton.setBackground(Color.black);
-        JButton redo = new JButton("Redo");
-        JButton undo = new JButton("Undo");
-        JButton select = new JButton("Select");
+        JButton redoButton = new JButton("Redo");
+        JButton undoButton = new JButton("Undo");
+        JButton selectButton = new JButton("Select");
+        JButton clearButton = new JButton("Clear");
         toolBar.add(colourButton);
         toolBar.add(fillButton);
-        toolBar.add(undo);
-        toolBar.add(redo);
-        toolBar.add(select);
+        toolBar.add(undoButton);
+        toolBar.add(redoButton);
+        toolBar.add(selectButton);
+        toolBar.add(clearButton);
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         colourButton.addActionListener(e -> {
@@ -103,7 +132,6 @@ public class VectorDrawingDelegate extends JFrame {
             colourButton.setBackground(colour);
             if (canvasModel.getMode() == CanvasModel.SELECT_MODE && canvasModel.getSelectedShape() != null) {
                 canvasModel.updateSelectedShapeColor();
-                canvasPanel.repaint();
             }
         });
 
@@ -111,22 +139,23 @@ public class VectorDrawingDelegate extends JFrame {
             canvasModel.changeFilledState();
             if (canvasModel.getMode() == CanvasModel.SELECT_MODE && canvasModel.getSelectedShape() != null) {
                 canvasModel.changeSelectedFilledState();
-                canvasPanel.repaint();
             }
         });
 
-        undo.addActionListener(e -> {
+        undoButton.addActionListener(e -> {
             canvasModel.undo();
-            canvasPanel.repaint();
         });
 
-        redo.addActionListener(e -> {
+        redoButton.addActionListener(e -> {
             canvasModel.redo();
-            canvasPanel.repaint();
         });
 
-        select.addActionListener(e -> {
+        selectButton.addActionListener(e -> {
             canvasModel.setMode(CanvasModel.SELECT_MODE);
+        });
+
+        clearButton.addActionListener(e -> {
+            canvasModel.cleanup();
         });
     }
 
@@ -138,6 +167,7 @@ public class VectorDrawingDelegate extends JFrame {
                 //set the shape type of canvas model based on the button name
                 ShapeType type = ShapeType.typeOfName(e.getActionCommand());
                 canvasModel.setShapeType(type);
+                requestFocus();
             }
         };
         //create shape button for each type of shape
@@ -150,4 +180,8 @@ public class VectorDrawingDelegate extends JFrame {
         }
     }
 
+    @Override
+    public void update() {
+        canvasPanel.repaint();
+    }
 }

@@ -1,12 +1,10 @@
-/*
- * Copyright 2021 Damon Yu
- */
 package model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * General Mode class initializes the basic observer behaviour with list of ShapeListeners.
  * @author 200011181
  * @version 1.0
  */

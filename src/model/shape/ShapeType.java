@@ -12,7 +12,8 @@ public enum ShapeType {
     RECTANGLE("Rectangle"),
     ELLIPSE("Ellipse"),
     CROSS("Cross"),
-    TRIANGLE("Triangle");
+    TRIANGLE("Triangle"),
+    PARALLELOGRAM("Parallelogram");
 
     private final String name;
 

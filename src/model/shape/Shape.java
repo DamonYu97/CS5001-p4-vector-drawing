@@ -1,22 +1,38 @@
-/*
- * Copyright 2021 Damon Yu
- */
 package model.shape;
 
 import java.awt.*;
 import java.io.Serializable;
 
 /**
+ * Shape is an abstract class for 2D vector drawing
  * @author 200011181
  * @version 1.0
  */
 public abstract class Shape implements Serializable {
     protected Color color;
+    /**
+     * fill state
+     */
     protected boolean isFilled;
+    /**
+     * start drawing point x coordinate
+     */
     protected int startPointX;
+    /**
+     * start drawing point y coordinate
+     */
     protected int startPointY;
+    /**
+     * end drawing point x coordinate
+     */
     protected int endPointX;
+    /**
+     * end drawing point y coordinate
+     */
     protected int endPointY;
+    /**
+     * build-in shape object to represent shape path
+     */
     protected java.awt.Shape shape;
 
     public Shape(Color color, boolean isFilled, int startPointX, int startPointY, int endPointX, int endPointY) {
@@ -29,6 +45,13 @@ public abstract class Shape implements Serializable {
         update();
     }
 
+    /**
+     * move the shape based on its original position and offset position
+     * @param offsetX offset position x
+     * @param offsetY offset position y
+     * @param initStart original start drawing point
+     * @param initEnd original end drawing point
+     */
     public void move(int offsetX, int offsetY, Point initStart, Point initEnd) {
         this.startPointX = initStart.x + offsetX;
         this.startPointY = initStart.y + offsetY;
@@ -37,7 +60,7 @@ public abstract class Shape implements Serializable {
         update();
     }
 
-    public boolean contain(int x, int y) {
+    public boolean contain(double x, double y) {
         return shape.contains(x, y);
     }
 
@@ -71,6 +94,9 @@ public abstract class Shape implements Serializable {
         update();
     }
 
+    /**
+     * update the shape based on different shape type
+     */
     protected abstract void update();
 
     public Point getStartPoint() {
@@ -79,6 +105,10 @@ public abstract class Shape implements Serializable {
 
     public Point getEndPoint() {
         return  new Point(endPointX, endPointY);
+    }
+
+    public java.awt.Shape getShape() {
+        return shape;
     }
 
     @Override
