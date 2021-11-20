@@ -1,6 +1,6 @@
 package model;
 
-import Util.ListUtil;
+import util.ListUtil;
 import model.shape.*;
 import model.shape.Shape;
 
@@ -125,6 +125,7 @@ public class CanvasModel extends GeneralModel {
         out.close();
     }
 
+    @SuppressWarnings("unchecked")
     public void load(File fromFile) throws IOException, ClassNotFoundException {
         addUndo();
         //get the file

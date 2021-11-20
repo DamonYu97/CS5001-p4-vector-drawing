@@ -1,8 +1,4 @@
-/*
- * Copyright 2021 Damon Yu
- */
 package main;
-
 
 import delegate.VectorDrawingDelegate;
 import model.CanvasModel;

@@ -1,4 +1,4 @@
-package Util;
+package util;
 
 import java.io.*;
 import java.util.List;
@@ -35,6 +35,7 @@ public class ListUtil<T> {
      * @param content the array of bytes to be deserialized
      * @return the list instance with T type deserialized from content.
      */
+    @SuppressWarnings("unchecked")
     public List<T> deserialize(byte[] content) {
         try {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(content);

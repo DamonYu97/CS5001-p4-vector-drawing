@@ -17,11 +17,11 @@ public class UtilTestSuiteRunner {
         }
 
         if(result.wasSuccessful()) {
-            System.out.println("Passed all " + result.getRunCount() +" Piece JUnit tests!");
+            System.out.println("Passed all " + result.getRunCount() +" Piece Util JUnit tests!");
             System.exit(0);
         }
         else {
-            System.out.println("Failed " + result.getFailureCount() + " out of " + result.getRunCount() +" Piece JUnit tests!");
+            System.out.println("Failed " + result.getFailureCount() + " out of " + result.getRunCount() +" Piece Util JUnit tests!");
             System.exit(1);
         }
     }

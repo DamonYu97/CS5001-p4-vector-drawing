@@ -1,6 +1,6 @@
 package util_tests;
 
-import Util.ListUtil;
+import util.ListUtil;
 import model.shape.Line;
 import model.shape.Shape;
 import org.junit.Test;

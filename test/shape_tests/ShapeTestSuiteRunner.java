@@ -17,11 +17,11 @@ public class ShapeTestSuiteRunner {
         }
 
         if(result.wasSuccessful()) {
-            System.out.println("Passed all " + result.getRunCount() +" Piece JUnit tests!");
+            System.out.println("Passed all " + result.getRunCount() +" Piece Shape JUnit tests!");
             System.exit(0);
         }
         else {
-            System.out.println("Failed " + result.getFailureCount() + " out of " + result.getRunCount() +" Piece JUnit tests!");
+            System.out.println("Failed " + result.getFailureCount() + " out of " + result.getRunCount() +" Piece Shape JUnit tests!");
             System.exit(1);
         }
     }
